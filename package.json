@@ -1,11 +1,11 @@
 {
-  "name": "app-backend",
+  "name": "senior-design-backend",
   "version": "1.0.0",
   "description": "app-backend-testing",
-  "main": "server.js",
+  "main": "index.js",
+  "type": "commonjs",
   "scripts": {
-    "test": "node server.js",
-    "start": "node server.js"
+    "start": "nodemon index.js"
   },
   "author": "Mohamed Faizel",
   "license": "ISC",
@@ -15,5 +15,16 @@
     "dotenv": "^16.0.2",
     "express": "^4.18.1",
     "mongoose": "^6.5.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MF249/Senior-Design-Backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MF249/Senior-Design-Backend/issues"
+  },
+  "homepage": "https://github.com/MF249/Senior-Design-Backend#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }
