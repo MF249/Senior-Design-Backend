@@ -1,22 +1,13 @@
 const express = require('express');
 const mongoUtil = require('../mongoUtil');
+const sgMail = require('@sendgrid/mail');
 const User = require('../models/newUser.js');
+const ObjectID = require('mongodb').ObjectID;
+
+require('dotenv').config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const router = express.Router();
-
-router.get('/getTest', (req, res) => {
-    res.send('Testing...');
-});
-
-router.post('/postTest', (req, res) => {
-    console.log(req.body);
-    res.send(req.body);
-});
-
-router.post('/createUser', (req, res) => {
-    console.log(req.body);
-    res.send(req.body);
-});
 
 router.get('/getAll', async (req, res) => {
         
@@ -35,7 +26,7 @@ router.post('/login', async (req, res) => {
     console.log('Searching for ' + username + " :");
 
     let db_connect = mongoUtil.getDb("AppTest");
-    let myquery = { Username: username, Password: password };
+    let myquery = { username: username, password: password };
     db_connect.collection("Users").findOne(myquery, function (err, result) {
         if (err) throw err;
         if (result) { res.json(result) } else { res.send('Incorrect username/password entered.') }
@@ -45,16 +36,16 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     
     const newUser = new User ({
-        Username: req.body.username,
-        Password: req.body.password,
-        Name: req.body.name,
-        Phone: req.body.phone,
-        Email: req.body.email
+        username: req.body.username,
+        password: req.body.password,
+        name: req.body.name,
+        phone: req.body.phone,
+        email: req.body.email
     });
 
     let db_connect = mongoUtil.getDb("AppTest");
-    let userQuery = { Username: req.body.username };
-    let emailQuery = { Email: req.body.email };
+    let userQuery = { username: req.body.username };
+    let emailQuery = { email: req.body.email };
     const userExist = await db_connect.collection("Users").find(userQuery).toArray();
     const emailExist = await db_connect.collection("Users").find(emailQuery).toArray();
     
@@ -67,6 +58,74 @@ router.post('/register', async (req, res) => {
             if (err) throw err;
             if (result) { res.json(result) } else { res.send('An error occured while registering your account.') }
         });
+    }
+});
+
+router.post('/sendTest', async (req, res) => {
+        
+    email = req.body.email;
+
+    let db_connect = mongoUtil.getDb("AppTest");
+    let emailQuery = { email: req.body.email };
+    const emailExist = await db_connect.collection("Users").find(emailQuery).toArray();
+
+    if (emailExist.length = 0) {
+        res.send('This email does not have a valid account.');
+    }
+
+    const msg = {
+        to: email,
+        from: 'liveboltsmartlock@gmail.com',
+        subject: 'Send Test',
+        text: 'Hello, world.',
+    };
+
+    sgMail.send(msg).then(() => {
+        console.log('Email successfully sent!');
+        res.send('Email successfully sent!');
+    }).catch((error) => {
+        console.error(error);
+    });
+});
+
+router.post('/sendVerifyEmail', async (req, res) => {
+        
+    userId = req.body.id;
+
+    let db_connect = mongoUtil.getDb("AppTest");
+    let userQuery = { _id: new ObjectID(userId) };
+    const userExist = await db_connect.collection("Users").findOne(userQuery);
+
+    if (!userExist) {
+        res.send('An error occured when creating your account. Please try again.');
+    } else if (userExist.emailConfirm == 1) {
+        res.send('This account has already been verified.');
+    } else {
+        
+        const pin = Math.floor(100000 + Math.random() * 900000);
+
+        const msg = {
+            to: userExist.email,
+            from: 'liveboltsmartlock@gmail.com',
+            substitutionWrappers: ['{{', '}}'],
+            dynamicTemplateData: {
+                name: `${userExist.name}`,
+                code: `${pin}`
+            },
+            templateId: 'd-1419eed499ef422c9b57f06653275dc4',
+        }
+    
+        sgMail.send(msg).then(() => {
+            console.log('Email successfully sent!');
+        }).catch((error) => {
+            res.send(error);
+        });
+
+        await db_connect.collection("Users").updateOne(
+            {_id: userExist._id}, 
+            {$set: {verifyPIN: pin}}
+        );
+        res.send('Email successfully sent!');
     }
 });
 
