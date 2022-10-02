@@ -4,6 +4,7 @@
   "description": "app-backend-testing",
   "main": "index.js",
   "type": "commonjs",
+  "proxy": "https://livebolt-rest-api.herokuapp.com/",
   "scripts": {
     "start": "node index.js"
   },
