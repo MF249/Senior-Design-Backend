@@ -24,8 +24,5 @@
   "bugs": {
     "url": "https://github.com/MF249/Senior-Design-Backend/issues"
   },
-  "homepage": "https://github.com/MF249/Senior-Design-Backend#readme",
-  "devDependencies": {
-    "nodemon": "^2.0.20"
-  }
+  "homepage": "https://github.com/MF249/Senior-Design-Backend#readme"
 }
