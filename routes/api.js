@@ -42,10 +42,10 @@ router.post('/login', async (req, res) => {
                 res.json(result);
 
             } else { 
-                res.send('Incorrect password entered');
+                res.send({ 'message' : 'Incorrect password entered' });
             }
         } else { 
-            res.send('Incorrect username entered');
+            res.send({ 'message' : 'Incorrect username entered' });
         }
     });
 });
