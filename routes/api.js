@@ -34,13 +34,7 @@ router.post('/login', async (req, res) => {
         if (result) { 
             let check = bcrypt.compareSync(password, result.password);
             if (check) { 
-                
-                const token = jwt.sign({ userId: result._id }, process.env.JWT_KEY, {
-                    expiresIn: "1h",
-                });
-                result.token = token;
                 res.json(result);
-
             } else { 
                 res.send({ 'message' : 'Incorrect password entered' });
             }
