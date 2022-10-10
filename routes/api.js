@@ -70,7 +70,7 @@ router.post('/register', async (req, res) => {
     } else {
         db_connect.collection("Users").insertOne(newUser, function (err, result) {
             if (err) throw err;
-            if (result) { res.json(result) } else { res.send('An error occured while registering your account.') }
+            if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while registering your account.' }) }
         });
     }
 });
@@ -84,7 +84,7 @@ router.post('/sendTest', async (req, res) => {
     const emailExist = await db_connect.collection("Users").find(emailQuery).toArray();
 
     if (emailExist.length = 0) {
-        res.send('This email does not have a valid account.');
+        res.send({ 'message' : 'This email does not have a valid account.' });
     }
 
     const msg = {
@@ -95,8 +95,7 @@ router.post('/sendTest', async (req, res) => {
     };
 
     sgMail.send(msg).then(() => {
-        console.log('Email successfully sent!');
-        res.send('Email successfully sent!');
+        res.send({ 'message' : 'Email successfully sent!' });
     }).catch((error) => {
         console.error(error);
     });
@@ -132,7 +131,7 @@ router.post('/sendVerifyEmail', async (req, res) => {
         sgMail.send(msg).then(() => {
             console.log('Email successfully sent!');
         }).catch((error) => {
-            res.send(error);
+            res.send({ 'message' : error });
         });
 
         await db_connect.collection("Users").updateOne(
@@ -152,7 +151,7 @@ router.post('/sendResetEmail', async (req, res) => {
     const emailExist = await db_connect.collection("Users").findOne(emailQuery);
 
     if (!emailExist) {
-        res.send('This email account does not have an account associated with it.');
+        res.send({ 'message' : 'This email account does not have an account associated with it.' });
     } else {
         
         const pin = Math.floor(100000 + Math.random() * 900000);
@@ -178,7 +177,7 @@ router.post('/sendResetEmail', async (req, res) => {
             {_id: emailExist._id}, 
             {$set: {verifyPIN: pin}}
         );
-        res.send('Email successfully sent!');
+        res.send({ 'message' : 'Email successfully sent!' });
     }
 });
 
@@ -192,7 +191,7 @@ router.post('/accountVerify', async (req, res) => {
     const userExist = await db_connect.collection("Users").findOne(userQuery);
 
     if (!userExist) {
-        res.send({"message" : 'An error has occured during the verification process. Please try again.'});
+        res.send({'message' : 'An error has occured during the verification process. Please try again.'});
     } else {
         
         if (userExist.verifyPIN == pin) {
@@ -203,9 +202,9 @@ router.post('/accountVerify', async (req, res) => {
                     $unset: {verifyPIN: ''}
                 }
             );
-            res.send({"message" : 'User has been successfully authenticated!'});
+            res.send({'message' : 'User has been successfully authenticated!'});
         } else {
-            res.send({"message" : 'The PIN you have entered is incorrect. Please try again.'});
+            res.send({'message' : 'The PIN you have entered is incorrect. Please try again.'});
         }
     }
 });
