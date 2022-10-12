@@ -218,14 +218,25 @@ router.post('/profileUser', async (req, res) => {
         
     userId = req.body.id;
 
+    let obj = {};
     let db_connect = mongoUtil.getDb("AppTest");
     let userQuery = { _id: new ObjectID(userId) };
     const userExist = await db_connect.collection("Users").findOne(userQuery);
 
     if (!userExist) {
-        res.send({'message' : 'An error has occured trying to retrieve your profile. Please try again.'});
+        res.send({
+            'message' : 'An error has occured trying to retrieve your profile. Please try again.'
+        });
     } else {
-        res.send(userExist);
+        
+        obj = { 
+            'username' : userExist.username,
+            'name' : userExist.name,
+            'email' : userExist.email,
+            'phone' : userExist.phone
+        };
+
+        res.send(obj);
     }
 });
 
