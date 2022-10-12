@@ -214,4 +214,19 @@ router.post('/accountVerify', async (req, res) => {
     }
 });
 
+router.post('/profileUser', async (req, res) => {
+        
+    userId = req.body.id;
+
+    let db_connect = mongoUtil.getDb("AppTest");
+    let userQuery = { _id: new ObjectID(userId) };
+    const userExist = await db_connect.collection("Users").findOne(userQuery);
+
+    if (!userExist) {
+        res.send({'message' : 'An error has occured trying to retrieve your profile. Please try again.'});
+    } else {
+        res.send(userExist);
+    }
+});
+
 module.exports = router;
