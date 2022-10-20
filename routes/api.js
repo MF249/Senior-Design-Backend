@@ -6,6 +6,7 @@ const jwt  = require('jsonwebtoken');
 const mongoUtil = require('../mongoUtil');
 const sgMail = require('@sendgrid/mail');
 const User = require('../models/newUser.js');
+const { db } = require('../models/newUser.js');
 const ObjectID = require('mongodb').ObjectID;
 
 router.use(cors());
@@ -23,6 +24,8 @@ router.get('/getAll', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     
+    var token;
+
     username = req.body.username;
     password = req.body.password;
 
@@ -38,8 +41,13 @@ router.post('/login', async (req, res) => {
                 const token = jwt.sign({ userId: result._id }, process.env.JWT_KEY, {
                     expiresIn: "1h",
                 });
-                result.token = token;
-                res.json(result);
+
+                db_connect.collection("Users").updateOne(myquery, {$set: {"token" : token}}, function(err, confirm) {
+                    if (err) throw err;
+                    if (confirm.acknowledged) { res.send({ 'token' : token }) }
+                    else { res.send({ 'message' : 'An error occured during login. Please try again.' }) }
+                });
+
             } else { 
                 res.send({ 'message' : 'Incorrect password entered' });
             }
