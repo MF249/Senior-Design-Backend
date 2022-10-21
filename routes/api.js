@@ -6,6 +6,8 @@ const jwt  = require('jsonwebtoken');
 const mongoUtil = require('../mongoUtil');
 const sgMail = require('@sendgrid/mail');
 const User = require('../models/newUser.js');
+const Activity = require('../models/newActivity.js');
+const newActivity = require('../models/newActivity.js');
 const ObjectID = require('mongodb').ObjectID;
 
 router.use(cors());
@@ -238,6 +240,21 @@ router.post('/profileUser', async (req, res) => {
 
         res.send(obj);
     }
+});
+
+router.post('/addActivity', async (req, res) => {
+
+    let obj = {};
+    let db_connect = mongoUtil.getDb("AppTest");
+    let newActivity = req.body.loggedActivity;
+    
+    //Date field
+    //Time field
+    //Lock ID
+
+    const insertActivity = await db_connect.collection("ActivityLog").find(newActivity).toArray();
+
+    res.send(insertActivity);
 });
 
 module.exports = router;
