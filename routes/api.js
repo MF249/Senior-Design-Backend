@@ -263,20 +263,20 @@ router.post('/addActivity', async (req, res) => {
         });
     }
 
-    const checkActivityExists = await db_connect.collection("ActivityLog").find(newActivity.date).limit(1).size();
+    const checkDateExists = await db_connect.collection("ActivityLog").find(newActivity.date);
 
-    if (checkActivityExists != 0)
+    if (checkDateExists != 0)
     {
         if (req.body.status === 'unlocked')
         {
-            db_connect.collection("ActivityLog").updateOne({date: newActivity.date}, {$push: {unlockedTime: newActivity.unlockTime}}, function (err, result) {
+            db_connect.collection("ActivityLog").updateOne({date: req.body.date}, {$push: {unlockTime: newActivity.unlockTime}}, function (err, result) {
                 if (err) throw err;
                 if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
             });
         }
         else
         {
-            db_connect.collection("ActivityLog").updateOne({date: newActivity.date}, {$push: {lockedTime: newActivity.lockTime}}, function (err, result) {
+            db_connect.collection("ActivityLog").updateOne({date: req.body.date}, {$push: {lockTime: newActivity.lockTime}}, function (err, result) {
                 if (err) throw err;
                 if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
             });
