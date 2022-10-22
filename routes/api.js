@@ -257,16 +257,16 @@ router.post('/addActivity', async (req, res) => {
     {
         newActivity = new Activity ({
             date: req.body.date,
-            unlocktime: req.body.time,
-            status: req.body.status,
+            unlockTime: req.body.time,
+            activityStatus: req.body.status,
         });
     }
     else
     {
         newActivity = new Activity ({
             date: req.body.date,
-            locktime: req.body.time,
-            status: req.body.status,
+            lockTime: req.body.time,
+            activityStatus: req.body.status,
         });
     }
 
