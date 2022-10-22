@@ -244,7 +244,7 @@ router.post('/profileUser', async (req, res) => {
 
 router.post('/addActivity', async (req, res) => {
     let db_connect = mongoUtil.getDb("AppTest");
-    let newActivityDate = {date: req.body.date};
+    let newActivity;
 
     if (req.body.status === 'unlocked')
     {
@@ -263,7 +263,7 @@ router.post('/addActivity', async (req, res) => {
         });
     }
 
-    const checkDateExists = await db_connect.collection("ActivityLog").find(newActivityDate);
+    const checkDateExists = await db_connect.collection("ActivityLog").find(newActivity.date);
 
     if (checkDateExists != 0)
     {
