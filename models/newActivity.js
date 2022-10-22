@@ -10,14 +10,14 @@ const ActivitySchema = mongoose.Schema({
         type: String,
         required: true
     },
-    unlockTime: {
+    unlockTime: [{
         type: String,
         required: true
-    },
-    activityStatus: {
+    }],
+    activityStatus: [{
         type: String,
         require: true
-    }
+    }]
 });
 
 module.exports = mongoose.model('ActivityLog', ActivitySchema);

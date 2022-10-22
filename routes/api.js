@@ -248,11 +248,6 @@ router.post('/addActivity', async (req, res) => {
     let db_connect = mongoUtil.getDb("AppTest");
     let newActivity;
 
-    console.log("We are in")
-    
-    //Date field
-    //Time field
-    //Lock ID
     if (req.body.status === 'unlocked')
     {
         newActivity = new Activity ({
@@ -270,7 +265,31 @@ router.post('/addActivity', async (req, res) => {
         });
     }
 
-    //const checkActivity = await db_connect.collection("ActivityLog").find(newActivity.date).limit(1).size();
+    const checkActivityExists = await db_connect.collection("ActivityLog").find(newActivity.date).limit(1).size();
+
+    if (checkActivityExists != 0)
+    {
+        if (req.body.status === 'unlocked')
+        {
+            db_connect.collection("ActivityLog").updateOne({date: newActivity.date}, {$push: {unlockedTime: newActivity.unlockTime}}, function (err, result) {
+                if (err) throw err;
+                if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
+            });
+        }
+        else
+        {
+            db_connect.collection("ActivityLog").updateOne({date: newActivity.date}, {$push: {lockedTime: newActivity.lockTime}}, function (err, result) {
+                if (err) throw err;
+                if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
+            });
+        }
+    } else
+    {
+        db_connect.collection("ActivityLog").insertOne(newActivity, function (err, result) {
+            if (err) throw err;
+            if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
+        });
+    }
 
     /*if (checkActivity === true)
     {
