@@ -246,13 +246,40 @@ router.post('/addActivity', async (req, res) => {
 
     let obj = {};
     let db_connect = mongoUtil.getDb("AppTest");
-    let newActivity = req.body.loggedActivity;
+    let newActivity;
     
     //Date field
     //Time field
     //Lock ID
+    if (req.body.status === 'unlocked')
+    {
+        newActivity = new Activity ({
+            date: req.body.date,
+            unlocktime: req.body.time,
+            status: req.body.status,
+        });
+    }
+    else
+    {
+        newActivity = new Activity ({
+            date: req.body.date,
+            locktime: req.body.time,
+            status: req.body.status,
+        });
+    }
 
-    const insertActivity = await db_connect.collection("ActivityLog").find(newActivity).toArray();
+    const checkActivity = await db_connect.collection("ActivityLog").find(newActivity.date).limit(1).size();
+
+    if (checkActivity === true)
+    {
+        // We want to insert new time in whichever array it is in.
+        const insertActivity = await db_connect.collection("ActivityLog").updateOne({date: newActivity.date}, {$addToSet: {unlocktime: newActivity.time}});
+    }
+    else
+    {
+        // We want to create a new date and then insert the time into the right array.
+        const insertActivity = await db_connect.collection("ActivityLog").updateOne({date: newActivity.date}, {$addToSet: {unlocktime: newActivity.time}});
+    }
 
     res.send(insertActivity);
 });

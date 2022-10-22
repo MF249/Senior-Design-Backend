@@ -3,18 +3,18 @@ const mongoose = require("mongoose");
 
 const ActivitySchema = mongoose.Schema({
     date: {
-        type: Date,
+        type: String,
         required: true
     },
     lockTime: {
-        type: Timestamp,
+        type: Array,
         required: true
     },
     unlockTime: {
-        type: Timestamp,
+        type: Array,
         required: true
     },
-    loggedActivity: {
+    activityStatus: {
         type: String,
         require: true
     }
