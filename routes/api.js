@@ -247,6 +247,8 @@ router.post('/addActivity', async (req, res) => {
     let obj = {};
     let db_connect = mongoUtil.getDb("AppTest");
     let newActivity;
+
+    console.log("We are in")
     
     //Date field
     //Time field
@@ -268,9 +270,9 @@ router.post('/addActivity', async (req, res) => {
         });
     }
 
-    const checkActivity = await db_connect.collection("ActivityLog").find(newActivity.date).limit(1).size();
+    //const checkActivity = await db_connect.collection("ActivityLog").find(newActivity.date).limit(1).size();
 
-    if (checkActivity === true)
+    /*if (checkActivity === true)
     {
         // We want to insert new time in whichever array it is in.
         const insertActivity = await db_connect.collection("ActivityLog").updateOne({date: newActivity.date}, {$addToSet: {unlocktime: newActivity.time}});
@@ -279,9 +281,12 @@ router.post('/addActivity', async (req, res) => {
     {
         // We want to create a new date and then insert the time into the right array.
         const insertActivity = await db_connect.collection("ActivityLog").updateOne({date: newActivity.date}, {$addToSet: {unlocktime: newActivity.time}});
-    }
+    }*/
 
-    res.send(insertActivity);
+    db_connect.collection("ActivityLog").insertOne(newActivity, function (err, result) {
+        if (err) throw err;
+        if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while registering your account.' }) }
+    });
 });
 
 module.exports = router;

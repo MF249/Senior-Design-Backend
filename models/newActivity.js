@@ -7,11 +7,11 @@ const ActivitySchema = mongoose.Schema({
         required: true
     },
     lockTime: {
-        type: Array,
+        type: String,
         required: true
     },
     unlockTime: {
-        type: Array,
+        type: String,
         required: true
     },
     activityStatus: {
