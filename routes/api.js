@@ -100,12 +100,14 @@ router.post('/register', async (req, res) => {
             res.send({ 'message' : error });
         });
 
-        await db_connect.collection("Users").updateOne(
+        db_connect.collection("Users").updateOne(
             {_id: result.insertedId}, 
             {$set: {verifyPIN: pin}}
-        );
-        
-        res.send({ 'message' : 'Email successfully sent!' });
+        ).then((err) => {
+            if(err) throw err;
+        })
+
+        res.send(result);
     }
 });
 
