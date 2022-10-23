@@ -268,7 +268,7 @@ router.post('/addActivity', async (req, res) => {
     console.log(checkDateExists);
     console.log(newActivity.date);
 
-    if (checkDateExists != 0)
+    if (checkDateExists.length != 0)
     {
         if (req.body.status === 'unlocked')
         {
