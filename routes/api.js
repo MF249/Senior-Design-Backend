@@ -23,8 +23,6 @@ router.get('/getAll', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    
-    var token;
 
     username = req.body.username;
     password = req.body.password;
@@ -77,9 +75,9 @@ router.post('/register', async (req, res) => {
     const emailExist = await db_connect.collection("Users").find(emailQuery).toArray();
     
     if (userExist.length != 0) {
-        res.send('A user with this username already exists.');
+        res.send({ 'message' : 'A user with this username already exists.' });
     } else if (emailExist.length != 0) {
-        res.send('This email address already has an account active.');
+        res.send({ 'message' : 'This email address already has an account active.'});
     } else {
         db_connect.collection("Users").insertOne(newUser, function (err, result) {
             if (err) throw err;
@@ -123,9 +121,9 @@ router.post('/sendVerifyEmail', async (req, res) => {
     const userExist = await db_connect.collection("Users").findOne(userQuery);
 
     if (!userExist) {
-        res.send({"message" : 'An error occured when creating your account. Please try again.', "userId" : "-1"});
+        res.send({ 'message' : 'An error occured while creating your account. Please try again.' });
     } else if (userExist.emailConfirm == 1) {
-        res.send({"message" : 'This account has already been verified.', "userId" : "-1"});
+        res.send({ 'message' : 'This account has already been verified.' });
     } else {
         
         const pin = Math.floor(100000 + Math.random() * 900000);
@@ -142,7 +140,7 @@ router.post('/sendVerifyEmail', async (req, res) => {
         }
     
         sgMail.send(msg).then(() => {
-            console.log('Email successfully sent!');
+            console.log('Verification email sent');
         }).catch((error) => {
             res.send({ 'message' : error });
         });
@@ -151,7 +149,8 @@ router.post('/sendVerifyEmail', async (req, res) => {
             {_id: userExist._id}, 
             {$set: {verifyPIN: pin}}
         );
-        res.send({"message" : 'Email successfully sent!', "userId" : userExist._id});
+        
+        res.send({ 'message' : 'Email successfully sent!' });
     }
 });
 
