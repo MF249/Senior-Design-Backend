@@ -57,6 +57,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
 
+    let result;
     let hash = await bcrypt.hash(req.body.password, 10);
 
     const newUser = new User ({
@@ -79,10 +80,32 @@ router.post('/register', async (req, res) => {
     } else if (emailExist.length != 0) {
         res.send({ 'message' : 'This email address already has an account active.'});
     } else {
-        db_connect.collection("Users").insertOne(newUser, function (err, result) {
-            if (err) throw err;
-            if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while registering your account.' }) }
+        result = await db_connect.collection("Users").insertOne(newUser);
+        const pin = Math.floor(100000 + Math.random() * 900000);
+
+        const msg = {
+            to: newUser.email,
+            from: 'liveboltsmartlock@gmail.com',
+            substitutionWrappers: ['{{', '}}'],
+            dynamicTemplateData: {
+                name: `${newUser.name}`,
+                code: `${pin}`
+            },
+            templateId: 'd-1419eed499ef422c9b57f06653275dc4',
+        }
+    
+        sgMail.send(msg).then(() => {
+            console.log('Verification email sent');
+        }).catch((error) => {
+            res.send({ 'message' : error });
         });
+
+        await db_connect.collection("Users").updateOne(
+            {_id: result.insertedId}, 
+            {$set: {verifyPIN: pin}}
+        );
+        
+        res.send({ 'message' : 'Email successfully sent!' });
     }
 });
 
