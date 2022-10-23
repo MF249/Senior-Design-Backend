@@ -263,10 +263,7 @@ router.post('/addActivity', async (req, res) => {
         });
     }
 
-    const checkDateExists = await db_connect.collection("ActivityLog").find({'date': newActivity.date}).limit(1);
-
-    console.log(checkDateExists);
-    console.log(newActivity.date);
+    const checkDateExists = await db_connect.collection("ActivityLog").find({date: newActivity.date}).limit(1);
 
     if (checkDateExists.length === 1)
     {
