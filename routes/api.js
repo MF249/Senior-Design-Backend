@@ -202,6 +202,7 @@ router.post('/accountVerify', async (req, res) => {
         
     pin = req.body.pin;
     userId = req.body.id;
+    token = req.body.token;
 
     let db_connect = mongoUtil.getDb("AppTest");
     let userQuery = { _id: new ObjectID(userId) };
@@ -210,6 +211,14 @@ router.post('/accountVerify', async (req, res) => {
     if (!userExist) {
         res.send({'message' : 'An error has occured during the verification process. Please try again.'});
     } else {
+        
+        if(userExist.token !== token) {
+            res.send({ 'message' : 'This page is no longer valid. Please reload and try again.'});
+        }
+        
+        if (userExist.emailConfirm == 1) {
+            res.send({ 'message' : 'This user has already been email verified. Please return to the login screen.'});
+        }
         
         if (userExist.verifyPIN == pin) {
             await db_connect.collection("Users").updateOne(
