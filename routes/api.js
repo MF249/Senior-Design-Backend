@@ -6,7 +6,6 @@ const jwt  = require('jsonwebtoken');
 const mongoUtil = require('../mongoUtil');
 const sgMail = require('@sendgrid/mail');
 const User = require('../models/newUser.js');
-const { db } = require('../models/newUser.js');
 const ObjectID = require('mongodb').ObjectID;
 
 router.use(cors());
@@ -36,7 +35,7 @@ router.post('/login', async (req, res) => {
             let check = bcrypt.compareSync(password, result.password);
             if (check) { 
                 
-                const token = jwt.sign({ userId: result._id }, process.env.JWT_KEY, {
+                const token = jwt.sign({ _id: result._id }, process.env.JWT_KEY, {
                     expiresIn: "1h",
                 });
 
@@ -57,7 +56,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
 
-    let result;
+    let result, token;
     let hash = await bcrypt.hash(req.body.password, 10);
 
     const newUser = new User ({
@@ -81,8 +80,11 @@ router.post('/register', async (req, res) => {
         res.send({ 'message' : 'This email address already has an account active.'});
     } else {
         result = await db_connect.collection("Users").insertOne(newUser);
-        const pin = Math.floor(100000 + Math.random() * 900000);
+        token = jwt.sign({ _id: result.insertedId }, process.env.JWT_KEY, {
+            expiresIn: "30m",
+        });
 
+        const pin = Math.floor(100000 + Math.random() * 900000);
         const msg = {
             to: newUser.email,
             from: 'liveboltsmartlock@gmail.com',
@@ -101,40 +103,18 @@ router.post('/register', async (req, res) => {
         });
 
         db_connect.collection("Users").updateOne(
-            {_id: result.insertedId}, 
-            {$set: {verifyPIN: pin}}
-        ).then((err) => {
-            if(err) throw err;
-        })
+            { username : req.body.username },
+            { $set: { token : token, verifyPIN : pin }}, function(err, confirm) {
+                if (err) throw err;
+                if (!confirm.acknowledged) { 
+                    res.send({ 'message' : 'An error occured during login. Please try again.' });
+                }
+            }
+        );
 
+        result.token = token;
         res.send(result);
     }
-});
-
-router.post('/sendTest', async (req, res) => {
-        
-    email = req.body.email;
-
-    let db_connect = mongoUtil.getDb("AppTest");
-    let emailQuery = { email: req.body.email };
-    const emailExist = await db_connect.collection("Users").find(emailQuery).toArray();
-
-    if (emailExist.length = 0) {
-        res.send({ 'message' : 'This email does not have a valid account.' });
-    }
-
-    const msg = {
-        to: email,
-        from: 'liveboltsmartlock@gmail.com',
-        subject: 'Send Test',
-        text: 'Hello, world.',
-    };
-
-    sgMail.send(msg).then(() => {
-        res.send({ 'message' : 'Email successfully sent!' });
-    }).catch((error) => {
-        console.error(error);
-    });
 });
 
 router.post('/sendVerifyEmail', async (req, res) => {
