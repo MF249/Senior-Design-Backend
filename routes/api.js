@@ -263,9 +263,9 @@ router.post('/addActivity', async (req, res) => {
         });
     }
 
-    const checkDateExists = await db_connect.collection("ActivityLog").find({date: req.body.date}).limit(1);
+    const checkDateExists = await db_connect.collection("ActivityLog").find({'date': newActivity.date}).limit(1);
 
-    if (checkDateExists)
+    if (checkDateExists.length === 1)
     {
         if (req.body.status === 'unlocked')
         {
