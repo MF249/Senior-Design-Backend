@@ -43,9 +43,10 @@ router.post('/login', async (req, res) => {
                     if (err) throw err;
                     if (confirm.acknowledged) { 
                         if (result.emailConfirm == -1) {
+                            
                             res.send({ 'token' : token, 'verify' : -1, 'id' : result._id});
                         } else {
-                            res.send({ 'token' : token, 'verify' : 1 });
+                            res.send({ 'token' : token, 'verify' : 1, 'id' : result._id});
                         }
                     }
                     else { res.send({ 'message' : 'An error occured during login. Please try again.' }) }
