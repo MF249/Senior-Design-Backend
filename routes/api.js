@@ -133,7 +133,7 @@ router.post('/sendVerifyEmail', async (req, res) => {
     const userExist = await db_connect.collection("Users").findOne(userQuery);
 
     if (!userExist) {
-        res.send({ 'message' : 'An error occured while creating your account. Please try again.' });
+        res.send({ 'message' : 'User does not exist. Please exit and reload page.' });
     } else if (userExist.emailConfirm == 1) {
         res.send({ 'message' : 'This account has already been verified.' });
     } else {
