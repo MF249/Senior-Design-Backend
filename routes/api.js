@@ -8,6 +8,8 @@ const sgMail = require('@sendgrid/mail');
 const User = require('../models/newUser.js');
 const Activity = require('../models/newActivity.js');
 const newActivity = require('../models/newActivity.js');
+const { MongoDBNamespace } = require('mongodb');
+const { default: mongoose } = require('mongoose');
 const ObjectID = require('mongodb').ObjectID;
 
 router.use(cors());
@@ -289,6 +291,25 @@ router.post('/addActivity', async (req, res) => {
             if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
         });
     }
+});
+
+const storage = multer.diskStorage({
+    destination: function (req, res, cb) {
+        cb(null, 'uploads/')
+    }
+});
+
+const multer = require('multer');
+const newPhoto = require('../models/newPhoto');
+const upload = multer({ storage: storage });
+
+router.post('/addPhoto', upload.single('file'), function (req, res) {
+    var new_img = new Img;
+    new_img.img.data = fs.readFileSync(req.file.path)
+    new_img.img.contentType = 'image/jpeg';
+    new_img.save();    
+    
+    res.json({ message: 'New image added to the db!' });
 });
 
 module.exports = router;
