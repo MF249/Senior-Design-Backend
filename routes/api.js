@@ -17,13 +17,14 @@ require('dotenv').config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const multer = require('multer');
-const upload = multer({ storage: storage });
 
 const storage = multer.diskStorage({
     destination: function (req, res, cb) {
         cb(null, 'uploads/')
     }
 });
+
+const upload = multer({ storage: storage });
 
 router.get('/getAll', async (req, res) => {
         
