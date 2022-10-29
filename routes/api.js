@@ -305,7 +305,8 @@ const upload = multer({ storage: storage });
 
 router.post('/addPhoto', upload.single('file'), function (req, res) {
     var new_img = new Img;
-    new_img.img.data = fs.readFileSync(req.file.path)
+    //new_img.img.data = fs.readFileSync(req.file.path)
+    new_img.img.data = fs.readFileSync("C://Users//Joels//OneDrive//Desktop//lookat.png");
     new_img.img.contentType = 'image/jpeg';
     new_img.save();    
     
