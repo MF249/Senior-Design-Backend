@@ -308,7 +308,11 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
     //new_img.img.data = fs.readFileSync(req.file.path)
     new_img.img.data = fs.readFileSync("C://Users//Joels//OneDrive//Desktop//lookat.png");
     new_img.img.contentType = 'image/jpeg';
-    new_img.save();    
+    db_connect.collection("LiveFeed").insertOne(new_img, function (err, result) {
+        if (err) throw err;
+        if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the LiveFeed table.' }) }
+    });
+    //new_img.save();    
     
     res.json({ message: 'New image added to the db!' });
 });
