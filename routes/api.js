@@ -12,6 +12,7 @@ const newActivity = require('../models/newActivity.js');
 const { MongoDBNamespace } = require('mongodb');
 const { default: mongoose } = require('mongoose');
 const ObjectID = require('mongodb').ObjectID;
+var fs = require('fs'); 
 
 router.use(cors());
 require('dotenv').config();
