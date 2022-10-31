@@ -7,6 +7,7 @@ const mongoUtil = require('../mongoUtil');
 const sgMail = require('@sendgrid/mail');
 const User = require('../models/newUser.js');
 const Activity = require('../models/newActivity.js');
+const Img = require('../models/newPhoto');
 const newActivity = require('../models/newActivity.js');
 const { MongoDBNamespace } = require('mongodb');
 const { default: mongoose } = require('mongoose');
