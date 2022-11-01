@@ -4,7 +4,6 @@ var ImgSchema = new Schema({
     img: { 
         data: Buffer, 
         contentType: String,
-        required: true
     },
     date: {
         type: Date,

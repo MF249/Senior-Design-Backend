@@ -16,7 +16,7 @@ const ActivitySchema = mongoose.Schema({
     }],
     activityStatus: [{
         type: String,
-        require: true
+        required: true
     }]
 });
 
