@@ -311,9 +311,9 @@ router.route('/addPhoto').post(upload.single('file'), function (req, res) {
     let db_connect = mongoUtil.getDb("AppTest");
     var date = new Date();
     var new_img = new Img;
-    //new_img.img.data = fs.readFileSync(req.file.path)
+    new_img.img.data = fs.readFileSync(path.resolve(req.file.path))
     //new_img.img.data = fs.readFileSync("C://Users//Joels//OneDrive//Desktop//lookat.png");
-    new_img.img.data = fs.readFileSync(path.resolve(__dirname, "../images/test3.jpeg"));
+    //new_img.img.data = fs.readFileSync(path.resolve(__dirname, "../images/test3.jpeg"));
     new_img.img.contentType = 'image/jpeg';
     new_img.date = date;
     db_connect.collection("LiveFeed").insertOne(new_img, function (err, result) {
