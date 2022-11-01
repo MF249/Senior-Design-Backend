@@ -307,18 +307,18 @@ router.post('/addActivity', async (req, res) => {
     }
 });
 
-router.post('/addPhoto', upload.single('file'), function (req, res) {
+router.route('/addPhoto').post(upload.single('file'), function (req, res) {
     let db_connect = mongoUtil.getDb("AppTest");
     var new_img = new Img;
     //new_img.img.data = fs.readFileSync(req.file.path)
     //new_img.img.data = fs.readFileSync("C://Users//Joels//OneDrive//Desktop//lookat.png");
     new_img.img.data = fs.readFileSync(path.resolve(__dirname, "../images/test3.jpeg"));
     new_img.img.contentType = 'image/jpeg';
-    /*db_connect.collection("LiveFeed").insertOne(new_img, function (err, result) {
+    db_connect.collection("LiveFeed").insertOne(new_img, function (err, result) {
         if (err) throw err;
         if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the LiveFeed table.' }) }
-    });*/
-    new_img.save();    
+    });
+    //new_img.save();    
     
     res.json({ message: 'New image added to the db!' });
 });
