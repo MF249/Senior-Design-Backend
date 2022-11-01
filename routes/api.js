@@ -311,7 +311,7 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
     var new_img = new Img;
     //new_img.img.data = fs.readFileSync(req.file.path)
     //new_img.img.data = fs.readFileSync("C://Users//Joels//OneDrive//Desktop//lookat.png");
-    new_img.img.data = fs.readFileSync(path.resolve(__dirname, "../lookat.png"));
+    new_img.img.data = fs.readFileSync(path.resolve(__dirname, "../test3.png"));
     new_img.img.contentType = 'image/jpeg';
     /*db_connect.collection("LiveFeed").insertOne(new_img, function (err, result) {
         if (err) throw err;
