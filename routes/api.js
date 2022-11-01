@@ -13,6 +13,7 @@ const { MongoDBNamespace } = require('mongodb');
 const { default: mongoose } = require('mongoose');
 const ObjectID = require('mongodb').ObjectID;
 var fs = require('fs'); 
+const path = require('path');
 //var photo = require('../images/image0010.jpg');
 
 router.use(cors());
