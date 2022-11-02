@@ -23,12 +23,15 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-    destination: function (req, res, cb) {
+    destination: function (req, file, cb) {
         cb(null, path.join(__dirname,'./uploads'))
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
     }
 });
 
-const upload = multer({ storage: storage });
+var upload = multer({ storage: storage });
 
 router.get('/getAll', async (req, res) => {
         
@@ -307,16 +310,18 @@ router.post('/addActivity', async (req, res) => {
     }
 });
 
-router.route('/addPhoto').post(upload.single('file'), function (req, res) {
+router.post('/addPhoto', upload.single('file'), function (req, res) {
     let db_connect = mongoUtil.getDb("AppTest");
     var date = new Date();
     var new_img = new Img;
     new_img.img.data = fs.readFileSync(req.file.path)
+    print(new_img.img.data);
+    print(req.file.filename);
     //new_img.img.data = fs.readFileSync("C://Users//Joels//OneDrive//Desktop//lookat.png");
     //new_img.img.data = fs.readFileSync(path.resolve(__dirname, "../images/test3.jpeg"));
-    new_img.img.contentType = 'image/jpeg';
+    console.log(req.body);
+    new_img.img.contentType = 'image/jpg';
     new_img.date = date;
-    console.log(req.file.path);
     db_connect.collection("LiveFeed").insertOne(new_img, function (err, result) {
         if (err) throw err;
         if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the LiveFeed table.' }) }
