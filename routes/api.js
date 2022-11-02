@@ -315,8 +315,8 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
     var date = new Date();
     var new_img = new Img;
     new_img.img.data = fs.readFileSync(req.file.path)
-    print(new_img.img.data);
-    print(req.file.filename);
+    console.log(new_img.img.data);
+    console.log(req.file.filename);
     //new_img.img.data = fs.readFileSync("C://Users//Joels//OneDrive//Desktop//lookat.png");
     //new_img.img.data = fs.readFileSync(path.resolve(__dirname, "../images/test3.jpeg"));
     console.log(req.body);
