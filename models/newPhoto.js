@@ -8,6 +8,10 @@ var ImgSchema = new Schema({
     date: {
         type: Date,
         required: true
+    },
+    name: {
+        type: String,
+        required: true
     }
 }, {
     timestamps: true
