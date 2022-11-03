@@ -315,21 +315,32 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
     var date = new Date();
     var new_img = new Img;
     new_img.img.data = fs.readFileSync(req.file.path)
-    //console.log(new_img.img.data);
-    //console.log(req.file.filename);
-    //new_img.img.data = fs.readFileSync("C://Users//Joels//OneDrive//Desktop//lookat.png");
-    //new_img.img.data = fs.readFileSync(path.resolve(__dirname, "../images/test3.jpeg"));
-    console.log(req.body);
+    //console.log(req.body);
     new_img.img.contentType = 'image/jpg';
     new_img.date = date;
     new_img.name = req.file.filename;
     db_connect.collection("LiveFeed").insertOne(new_img, function (err, result) {
         if (err) throw err;
         if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the LiveFeed table.' }) }
-    });
-    //new_img.save();    
+    }); 
     
     res.json({ message: 'New image added to the db!' });
+});
+
+router.get('/getPhoto', function (req, res) {
+    let db_connect = mongoUtil.getDb("AppTest");
+    
+    db_connect.collection("LiveFeed").findOne(new_img, function (err, result) {
+        if (err)
+            res.send(err);        
+            console.log(img);        
+        res.contentType('json');
+        res.send(img);
+    }).sort({ 
+        createdAt: 'desc' 
+    });  
+    
+    res.json({ message: 'Image was retrieved.' });
 });
 
 module.exports = router;
