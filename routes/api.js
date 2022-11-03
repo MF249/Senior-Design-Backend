@@ -325,12 +325,10 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
     }); 
     
     res.json({ message: 'New image added to the db!' });
-});
-
-router.get('/getPhoto', function (req, res) {
+}).get('/getPhoto', function (req, res) {
     let db_connect = mongoUtil.getDb("AppTest");
     
-    db_connect.collection("LiveFeed").findOne(new_img, function (err, result) {
+    db_connect.collection("LiveFeed").findOne(Img, function (err, result) {
         if (err)
             res.send(err);        
             console.log(img);        
@@ -342,5 +340,22 @@ router.get('/getPhoto', function (req, res) {
     
     res.json({ message: 'Image was retrieved.' });
 });
+
+
+/*router.get('/getPhoto', function (req, res) {
+    let db_connect = mongoUtil.getDb("AppTest");
+    
+    db_connect.collection("LiveFeed").findOne({}, function (err, result) {
+        if (err)
+            res.send(err);        
+            console.log(img);        
+        res.contentType('json');
+        res.send(img);
+    }).sort({ 
+        createdAt: 'desc' 
+    });  
+    
+    res.json({ message: 'Image was retrieved.' });
+});*/
 
 module.exports = router;
