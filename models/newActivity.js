@@ -6,18 +6,19 @@ const ActivitySchema = mongoose.Schema({
         type: String,
         required: true
     },
-    lockTime: {
+    lockTime: [{
         type: String,
-        required: true
-    },
+    }],
     unlockTime: [{
         type: String,
-        required: true
     }],
-    activityStatus: [{
-        type: String,
-        require: true
-    }]
+    // -1: disabled, 0: default/unknown. 1: enabled
+    activityStatus: {
+        type: Number, 
+        enum: [-1, 0, 1],
+        default: 0,
+        required: true
+    }
 });
 
-module.exports = mongoose.model('ActivityLog', ActivitySchema);
+module.exports = mongoose.model('Activity', ActivitySchema);

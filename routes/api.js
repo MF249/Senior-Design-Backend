@@ -7,7 +7,6 @@ const mongoUtil = require('../mongoUtil');
 const sgMail = require('@sendgrid/mail');
 const User = require('../models/newUser.js');
 const Activity = require('../models/newActivity.js');
-const newActivity = require('../models/newActivity.js');
 const ObjectID = require('mongodb').ObjectID;
 
 router.use(cors());
@@ -243,52 +242,66 @@ router.post('/profileUser', async (req, res) => {
 });
 
 router.post('/addActivity', async (req, res) => {
+    
+    let timestamp = req.body.timestamp;
+    let lockStatus = req.body.status;
+    
+    let date = timestamp.slice(0, 10);
+    let time = timestamp.slice(11, 19);
+
     let db_connect = mongoUtil.getDb("AppTest");
-    let newActivity;
+    let dateQuery = { 'date' : date };
+    db_connect.collection("ActivityLog").findOne(dateQuery).then((response) => {
+        if (response) {
+            
+            if (lockStatus === '1') {
+                
+                db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
+                    $push: { lockTime: time }, $set: { activityStatus : 1 }
+                }, function (err, result) {
+                    if (err) throw err;
+                    if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
+                });
 
-    if (req.body.status === 'unlocked')
-    {
-        newActivity = new Activity ({
-            date: req.body.date,
-            unlockTime: req.body.time,
-            activityStatus: req.body.status,
-        });
-    }
-    else
-    {
-        newActivity = new Activity ({
-            date: req.body.date,
-            lockTime: req.body.time,
-            activityStatus: req.body.status,
-        });
-    }
+            } else if (lockStatus === '-1') {
 
-    const checkDateExists = await db_connect.collection("ActivityLog").find({'date': newActivity.date}).limit(1);
+                db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
+                    $push: { unlockTime: time }, $set: { activityStatus : -1 },
+                }, function (err, result) {
+                    if (err) throw err;
+                    if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
+                });
 
-    if (checkDateExists.length === 1)
-    {
-        if (req.body.status === 'unlocked')
-        {
-            db_connect.collection("ActivityLog").updateOne({date: req.body.date}, {$push: {unlockTime: newActivity.unlockTime}}, function (err, result) {
+            } else {
+                res.send({ 'message' : 'Error: unauthorized lock status' });
+            }
+
+        } else {
+            
+            if (lockStatus = 1) {
+                newActivity = new Activity ({
+                    date: date,
+                    lockTime: [time],
+                    unlockTime: [],
+                    activityStatus: 1
+                });
+            } else if (lockStatus = -1) {
+                newActivity = new Activity ({
+                    date: date,
+                    lockTime: [],
+                    unlockTime: [time],
+                    activityStatus: -1
+                });
+            } else {
+                res.send({ 'message' : 'Error: unauthorized lock status' });
+            }
+
+            db_connect.collection("ActivityLog").insertOne(newActivity, function (err, result) {
                 if (err) throw err;
                 if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
             });
         }
-        else
-        {
-            db_connect.collection("ActivityLog").updateOne({date: req.body.date}, {$push: {lockTime: newActivity.lockTime}}, function (err, result) {
-                if (err) throw err;
-                if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
-            });
-        }
-    } 
-    else
-    {
-        db_connect.collection("ActivityLog").insertOne(newActivity, function (err, result) {
-            if (err) throw err;
-            if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
-        });
-    }
+    });
 });
 
 module.exports = router;
