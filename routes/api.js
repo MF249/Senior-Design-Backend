@@ -279,7 +279,7 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
 }).get('/getPhoto', function (req, res) {
     let db_connect = mongoUtil.getDb("AppTest");
     
-    db_connect.collection("LiveFeed").findOne(Img, function (err, img) {
+    db_connect.collection("LiveFeed").findOne({}, 'img createdAt', function (err, img) {
         if (err)
             res.send(err);        
             
@@ -288,7 +288,7 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
         res.send(img);
     }); 
     
-    console.log(img);  
+    //console.log(img);  
     res.json({ message: 'Image was retrieved.' });
 });
 
