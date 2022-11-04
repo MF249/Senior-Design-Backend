@@ -261,55 +261,6 @@ router.post('/profileUser', async (req, res) => {
     }
 });
 
-router.post('/addActivity', async (req, res) => {
-    let db_connect = mongoUtil.getDb("AppTest");
-    let newActivity;
-
-    if (req.body.status === 'unlocked')
-    {
-        newActivity = new Activity ({
-            date: req.body.date,
-            unlockTime: req.body.time,
-            activityStatus: req.body.status,
-        });
-    }
-    else
-    {
-        newActivity = new Activity ({
-            date: req.body.date,
-            lockTime: req.body.time,
-            activityStatus: req.body.status,
-        });
-    }
-
-    const checkDateExists = await db_connect.collection("ActivityLog").find({'date': newActivity.date}).limit(1);
-
-    if (checkDateExists.length === 1)
-    {
-        if (req.body.status === 'unlocked')
-        {
-            db_connect.collection("ActivityLog").updateOne({date: req.body.date}, {$push: {unlockTime: newActivity.unlockTime}}, function (err, result) {
-                if (err) throw err;
-                if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
-            });
-        }
-        else
-        {
-            db_connect.collection("ActivityLog").updateOne({date: req.body.date}, {$push: {lockTime: newActivity.lockTime}}, function (err, result) {
-                if (err) throw err;
-                if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
-            });
-        }
-    } 
-    else
-    {
-        db_connect.collection("ActivityLog").insertOne(newActivity, function (err, result) {
-            if (err) throw err;
-            if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
-        });
-    }
-});
-
 router.post('/addPhoto', upload.single('file'), function (req, res) {
     let db_connect = mongoUtil.getDb("AppTest");
     var date = new Date();
@@ -328,10 +279,11 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
 }).get('/getPhoto', function (req, res) {
     let db_connect = mongoUtil.getDb("AppTest");
     
-    db_connect.collection("LiveFeed").findOne(Img, function (err, result) {
+    db_connect.collection("LiveFeed").findOne(Img, function (err, img) {
         if (err)
             res.send(err);        
-            console.log(img);        
+            
+        console.log(img);        
         res.contentType('json');
         res.send(img);
     }).sort({ createdAt: 'desc' });  
