@@ -334,9 +334,7 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
             console.log(img);        
         res.contentType('json');
         res.send(img);
-    }).sort({ 
-        createdAt: 'desc' 
-    });  
+    }).sort({ createdAt: 'desc' });  
     
     res.json({ message: 'Image was retrieved.' });
 });
