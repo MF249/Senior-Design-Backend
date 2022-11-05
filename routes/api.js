@@ -242,12 +242,12 @@ router.post('/profileUser', async (req, res) => {
 });
 
 router.post('/addActivity', async (req, res) => {
-    
+
     let timestamp = req.body.timestamp;
     let lockStatus = req.body.status;
     
-    let date = timestamp.slice(0, 10);
-    let time = timestamp.slice(11, 19);
+    let date = timestamp.slice(0, 9);
+    let time = timestamp.slice(11, 21);
 
     let db_connect = mongoUtil.getDb("AppTest");
     let dateQuery = { 'date' : date };
@@ -278,14 +278,14 @@ router.post('/addActivity', async (req, res) => {
 
         } else {
             
-            if (lockStatus = 1) {
+            if (lockStatus === '1') {
                 newActivity = new Activity ({
                     date: date,
                     lockTime: [time],
                     unlockTime: [],
                     activityStatus: 1
                 });
-            } else if (lockStatus = -1) {
+            } else if (lockStatus === '-1') {
                 newActivity = new Activity ({
                     date: date,
                     lockTime: [],
