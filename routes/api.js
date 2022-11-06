@@ -286,10 +286,11 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
         console.log(img);        
         res.contentType('json');
         res.send(img);
+
+        res.json({ message: img });
     }); 
     
-    //console.log(img);  
-    res.json({ message: 'Image was retrieved.' });
+    //console.log(img); 
 });
 
 
