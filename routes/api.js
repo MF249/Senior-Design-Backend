@@ -267,7 +267,7 @@ router.post('/addPhoto', upload.single('file'), function (req, res) {
     var new_img = new Img;
     new_img.img.data = fs.readFileSync(req.file.path)
     //console.log(req.body);
-    new_img.img.contentType = 'image/jpg';
+    //new_img.img.contentType = 'image/jpg';
     new_img.date = date;
     new_img.name = req.file.filename;
     db_connect.collection("LiveFeed").insertOne(new_img, function (err, result) {
