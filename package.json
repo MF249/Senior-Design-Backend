@@ -4,7 +4,8 @@
   "description": "app-backend-testing",
   "main": "index.js",
   "engines": {
-    "node": "16.x"
+    "node": "16.14.x",
+    "npm" : "8.16.x"
   },
   "type": "commonjs",
   "scripts": {
