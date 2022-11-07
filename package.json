@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "app-backend-testing",
   "main": "index.js",
-  "engines": {
-    "node": "16.14.x",
-    "npm" : "8.16.x"
-  },
   "type": "commonjs",
   "scripts": {
     "start": "node index.js"
