@@ -12,6 +12,7 @@ const ObjectID = require('mongodb').ObjectID;
 router.use(cors());
 require('dotenv').config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 router.get('/getAll', async (req, res) => {
         
@@ -319,16 +320,12 @@ router.post('/textUser', async (req, res) => {
         });
     } else { userPhone = userExist.phone }
 
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const client = require('twilio')(accountSid, authToken);
-
     let pnumber = "+1" + userPhone;
     client.messages.create({
         body: 'Testing Text Message API...', 
         from: '+17087428465', 
         to: pnumber
-    }).then(console.log("SMS sent to " + pnumber));
+    }).then(res.send("SMS sent to " + pnumber));
 });
 
 module.exports = router;
