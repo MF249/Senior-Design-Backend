@@ -304,4 +304,31 @@ router.post('/addActivity', async (req, res) => {
     });
 });
 
+router.post('/textUser', async (req, res) => {
+
+    let userId = req.body.id;
+    var userPhone;
+
+    let db_connect = mongoUtil.getDb("AppTest");
+    let userQuery = { _id: new ObjectID(userId) };
+    const userExist = await db_connect.collection("Users").findOne(userQuery);
+
+    if (!userExist) {
+        res.send({
+            'message' : 'An error has occured trying to retrieve your profile. Please try again.'
+        });
+    } else { userPhone = userExist.phone }
+
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const client = require('twilio')(accountSid, authToken);
+
+    let pnumber = "+1" + userPhone;
+    client.messages.create({
+        body: 'Testing Text Message API...', 
+        from: '+17087428465', 
+        to: pnumber
+    }).then(console.log("SMS sent to " + pnumber));
+});
+
 module.exports = router;
