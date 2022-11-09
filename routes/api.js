@@ -305,6 +305,24 @@ router.post('/addActivity', async (req, res) => {
     });
 });
 
+router.post('/getActivity', async (req, res) => {
+
+    let date = req.body.date;
+    let obj = {};
+
+    let db_connect = mongoUtil.getDb("AppTest");
+    let dateQuery = { 'date' : date };
+    db_connect.collection("ActivityLog").findOne(dateQuery).then((response) => {
+        if (response) {
+            obj.lockTime = response.lockTime;
+            obj.unlockTime = response.unlockTime;
+            res.send(obj);
+        } else {
+            res.send({'message' : 'No activity occured on this date.'});
+        }
+    });
+});
+
 router.post('/textUser', async (req, res) => {
 
     let userId = req.body.id;
