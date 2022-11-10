@@ -247,8 +247,8 @@ router.post('/addActivity', async (req, res) => {
     let timestamp = req.body.timestamp;
     let lockStatus = req.body.status;
     
-    let date = timestamp.slice(0, 9);
-    let time = timestamp.slice(11, 21);
+    let date = timestamp.slice(0, 10);
+    let time = timestamp.slice(11, 22);
 
     let db_connect = mongoUtil.getDb("AppTest");
     let dateQuery = { 'date' : date };
@@ -258,7 +258,7 @@ router.post('/addActivity', async (req, res) => {
             if (lockStatus === '1') {
                 
                 db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
-                    $push: { lockTime: time }, $set: { activityStatus : 1 }
+                    $push: { lockTime: { time : time, toggle : 1 } }, $set: { activityStatus : 1 }
                 }, function (err, result) {
                     if (err) throw err;
                     if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
@@ -267,7 +267,7 @@ router.post('/addActivity', async (req, res) => {
             } else if (lockStatus === '-1') {
 
                 db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
-                    $push: { unlockTime: time }, $set: { activityStatus : -1 },
+                    $push: { lockTime: { time : time, toggle : -1 } }, $set: { activityStatus : -1 },
                 }, function (err, result) {
                     if (err) throw err;
                     if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
@@ -282,15 +282,13 @@ router.post('/addActivity', async (req, res) => {
             if (lockStatus === '1') {
                 newActivity = new Activity ({
                     date: date,
-                    lockTime: [time],
-                    unlockTime: [],
+                    lockTime: [{ time : time, toggle : 1 }],
                     activityStatus: 1
                 });
             } else if (lockStatus === '-1') {
                 newActivity = new Activity ({
                     date: date,
-                    lockTime: [],
-                    unlockTime: [time],
+                    lockTime: [{ time : time, toggle : -1 }],
                     activityStatus: -1
                 });
             } else {

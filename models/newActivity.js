@@ -6,12 +6,10 @@ const ActivitySchema = mongoose.Schema({
         type: String,
         required: true
     },
-    lockTime: [{
-        type: String,
-    }],
-    unlockTime: [{
-        type: String,
-    }],
+    lockTime: {
+        type: Array,
+        default: []
+    },
     // -1: disabled, 0: default/unknown. 1: enabled
     activityStatus: {
         type: Number, 
