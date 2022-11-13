@@ -136,7 +136,7 @@ router.post('/sendVerifyEmail', async (req, res) => {
         }
     
         sgMail.send(msg).then(() => {
-            console.log('Email successfully sent!');
+            console.log('Account verification email sent');
         }).catch((error) => {
             res.send({ 'message' : error });
         });
@@ -175,7 +175,7 @@ router.post('/sendResetEmail', async (req, res) => {
         }
     
         sgMail.send(msg).then(() => {
-            console.log('Email successfully sent!');
+            console.log('Reset password email sent');
         }).catch((error) => {
             res.send(error);
         });
@@ -184,7 +184,7 @@ router.post('/sendResetEmail', async (req, res) => {
             {_id: emailExist._id}, 
             {$set: {verifyPIN: pin}}
         );
-        res.send({ 'message' : 'Email successfully sent!' });
+        res.send({ 'message' : 'Email successfully sent!', 'userId' : emailExist._id });
     }
 });
 
