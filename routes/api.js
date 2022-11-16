@@ -297,8 +297,10 @@ router.post('/addActivity', async (req, res) => {
     let text = req.body.text;
     let userId = req.body.id;
     
-    let date = timestamp.slice(0, 10);
-    let time = timestamp.slice(11, 22);
+    var fields = timestamp.split(',');
+    let date = fields[0];
+    let time = fields[1];
+    
     var pnumber;
     var bodyText;
 
@@ -307,7 +309,7 @@ router.post('/addActivity', async (req, res) => {
     db_connect.collection("ActivityLog").findOne(dateQuery).then((response) => {
         if (response) {
             if (lockStatus === '1') {
-                bodyText = "Live Bolt Activity: Locked at" + time;
+                bodyText = "Live Bolt Activity: Your door was locked at" + time;
                 db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
                     $push: { lockTime: { time : time, toggle : 1 } }, $set: { activityStatus : 1 }
                 }, function (err, result) {
@@ -316,7 +318,7 @@ router.post('/addActivity', async (req, res) => {
                 });
 
             } else if (lockStatus === '-1') {
-                bodyText = "Live Bolt Activity: Unlocked at" + time;
+                bodyText = "Live Bolt Activity: Your door was unlocked at" + time;
                 db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
                     $push: { lockTime: { time : time, toggle : -1 } }, $set: { activityStatus : -1 },
                 }, function (err, result) {
@@ -352,7 +354,7 @@ router.post('/addActivity', async (req, res) => {
         }
     });
 
-    if (text === '1') {
+    if (text) {
         let userQuery = { _id: new ObjectID(userId) };
         db_connect.collection("Users").findOne(userQuery, function (err, result) {
             if (err) throw err;
@@ -363,6 +365,8 @@ router.post('/addActivity', async (req, res) => {
                 body: bodyText, 
                 from: '+17087428465', 
                 to: pnumber
+            }, function (err) {
+                if (err) res.send(err);
             }).then(res.send("SMS sent to " + pnumber));
         });
     } else {
@@ -380,7 +384,6 @@ router.post('/getActivity', async (req, res) => {
     db_connect.collection("ActivityLog").findOne(dateQuery).then((response) => {
         if (response) {
             obj.lockTime = response.lockTime;
-            obj.unlockTime = response.unlockTime;
             res.send(obj);
         } else {
             res.send({'message' : 'No activity occured on this date.'});
