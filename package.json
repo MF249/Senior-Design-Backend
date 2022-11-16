@@ -20,6 +20,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.11.0",
     "mongoose": "^6.3.0",
+    "mqtt": "^4.3.7",
     "react-jwt": "^1.1.4",
     "react-scripts": "^0.9.3",
     "twilio": "^3.83.1"

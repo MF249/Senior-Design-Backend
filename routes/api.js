@@ -216,6 +216,54 @@ router.post('/accountVerify', async (req, res) => {
     }
 });
 
+router.post('/resetVerify', async (req, res) => {
+        
+    pin = req.body.pin;
+    userId = req.body.id;
+
+    let db_connect = mongoUtil.getDb("AppTest");
+    let userQuery = { _id: new ObjectID(userId) };
+    const userExist = await db_connect.collection("Users").findOne(userQuery);
+
+    if (!userExist) {
+        res.send({'message' : 'This account does not exist.'});
+    } else {
+        
+        if (userExist.verifyPIN == pin) {
+            await db_connect.collection("Users").updateOne(
+                { _id: userExist._id }, 
+                {
+                    $set: { emailConfirm: 1 },
+                    $unset: {verifyPIN: ''}
+                }
+            );
+            res.send({'match' : 1});
+        } else {
+            res.send({'message' : 'Incorrect PIN entered. Please try again.'});
+        }
+    }
+});
+
+router.post('/changePassword', async (req, res) => {
+        
+    password = req.body.password;
+    userId = req.body.id;
+
+    let db_connect = mongoUtil.getDb("AppTest");
+    let userQuery = { _id: new ObjectID(userId) };
+    let hash = await bcrypt.hash(password, 10);
+    const userExist = await db_connect.collection("Users").findOne(userQuery);
+
+    if (!userExist) {
+        res.send({'message' : 'This account does not exist.'});
+    } else {  
+        await db_connect.collection("Users").updateOne({ _id: userExist._id }, 
+            { $set: { password: hash }, $unset: {verifyPIN: ''} }
+        );
+        res.send({'confirm' : 1, 'message' : 'Password successfully reset! Redirecting to login.'});
+    }
+});
+
 router.post('/profileUser', async (req, res) => {
         
     userId = req.body.id;
@@ -246,31 +294,34 @@ router.post('/addActivity', async (req, res) => {
 
     let timestamp = req.body.timestamp;
     let lockStatus = req.body.status;
+    let text = req.body.text;
+    let userId = req.body.id;
     
     let date = timestamp.slice(0, 10);
     let time = timestamp.slice(11, 22);
+    var pnumber;
+    var bodyText;
 
     let db_connect = mongoUtil.getDb("AppTest");
     let dateQuery = { 'date' : date };
     db_connect.collection("ActivityLog").findOne(dateQuery).then((response) => {
         if (response) {
-            
             if (lockStatus === '1') {
-                
+                bodyText = "Live Bolt Activity: Locked at" + time;
                 db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
                     $push: { lockTime: { time : time, toggle : 1 } }, $set: { activityStatus : 1 }
                 }, function (err, result) {
                     if (err) throw err;
-                    if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
+                    if (!result) { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
                 });
 
             } else if (lockStatus === '-1') {
-
+                bodyText = "Live Bolt Activity: Unlocked at" + time;
                 db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
                     $push: { lockTime: { time : time, toggle : -1 } }, $set: { activityStatus : -1 },
                 }, function (err, result) {
                     if (err) throw err;
-                    if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
+                    if (!result) { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
                 });
 
             } else {
@@ -278,29 +329,45 @@ router.post('/addActivity', async (req, res) => {
             }
 
         } else {
-            
             if (lockStatus === '1') {
                 newActivity = new Activity ({
                     date: date,
                     lockTime: [{ time : time, toggle : 1 }],
                     activityStatus: 1
                 });
+
             } else if (lockStatus === '-1') {
                 newActivity = new Activity ({
                     date: date,
                     lockTime: [{ time : time, toggle : -1 }],
                     activityStatus: -1
                 });
-            } else {
-                res.send({ 'message' : 'Error: unauthorized lock status' });
-            }
+
+            } else { res.send({ 'message' : 'Error: unauthorized lock status' }) }
 
             db_connect.collection("ActivityLog").insertOne(newActivity, function (err, result) {
                 if (err) throw err;
-                if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
+                if (!result) { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
             });
         }
     });
+
+    if (text === '1') {
+        let userQuery = { _id: new ObjectID(userId) };
+        db_connect.collection("Users").findOne(userQuery, function (err, result) {
+            if (err) throw err;
+            if (!result) { res.send({ 'message' : 'An error has occured sending text alerts to your number.' }) }
+            
+            pnumber = "+1" + result.phone;
+            client.messages.create({
+                body: bodyText, 
+                from: '+17087428465', 
+                to: pnumber
+            }).then(res.send("SMS sent to " + pnumber));
+        });
+    } else {
+        res.send({ 'message' : 'Activity log successfully updated!' })
+    }
 });
 
 router.post('/getActivity', async (req, res) => {
