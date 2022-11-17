@@ -341,6 +341,7 @@ router.post('/addActivity', async (req, res) => {
                     lockTime: [{ time : time, toggle : 1 }],
                     activityStatus: 1
                 });
+                bodyText = "Live Bolt Activity: Your door was locked at" + time;
 
             } else if (lockStatus === '-1') {
                 newActivity = new Activity ({
@@ -348,6 +349,7 @@ router.post('/addActivity', async (req, res) => {
                     lockTime: [{ time : time, toggle : -1 }],
                     activityStatus: -1
                 });
+                bodyText = "Live Bolt Activity: Your door was unlocked at" + time;
 
             } else { 
                 console.log('Lock status error...');
