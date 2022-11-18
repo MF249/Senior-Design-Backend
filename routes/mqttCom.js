@@ -18,15 +18,15 @@ router.get('/testRouter', async (req, res) => {
 
 router.get('/testCon', async (req, res) => {
     
-    const client  = mqtt.connect(connectUrl);
+    const client  = mqtt.connect('mqtt://test.mosquitto.org');
     client.on('connect', function (err) {
         console.log('connnected');
-        client.subscribe('myfirst/test');
-        client.publish('myfirst/test', '1');
+        client.subscribe('livebolt/nodejs');
+        client.publish('livebolt/nodejs', '1');
     });
 
     client.on('message', function (topic, message) {
-        response = 'Received ' + message.toString() + ' from topic ' + topic.toString();
+        response = 'Sent ' + message.toString() + ' from topic ' + topic.toString();
         res.send({ 'message' : response });
         client.end();
     });
