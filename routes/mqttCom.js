@@ -10,7 +10,6 @@ require('dotenv').config();
 // mosquitto_sub -d -h localhost -p 1883 -t "myfirst/nodejs"
 // mosquitto_pub -d -h localhost -p 1883 -t "myfirst/nodejs" -m "Hello"
 
-
 const connectUrl = 'mqtt://192.168.1.180';
 
 router.get('/testRouter', async (req, res) => {
@@ -18,11 +17,18 @@ router.get('/testRouter', async (req, res) => {
 });
 
 router.get('/testCon', async (req, res) => {
+    
     const client  = mqtt.connect(connectUrl);
     client.on('connect', function (err) {
         console.log('connnected');
         client.subscribe('myfirst/test');
         client.publish('myfirst/test', '1');
+    });
+
+    client.on('message', function (topic, message) {
+        response = 'Received ' + message.toString() + ' from topic ' + topic.toString();
+        res.send({ 'message' : response });
+        client.end();
     });
 });
 
