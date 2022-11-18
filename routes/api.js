@@ -14,13 +14,8 @@ require('dotenv').config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-router.get('/getAll', async (req, res) => {
-        
-    let db_connect = mongoUtil.getDb("AppTest");
-    db_connect.collection("Users").find({}).toArray(function (err, result) {
-        if (err) throw err;
-        res.json(result);
-    });
+router.get('/testRouter', async (req, res) => {
+    res.send({ 'message' : 'Hello from /api'});
 });
 
 router.post('/login', async (req, res) => {
@@ -297,8 +292,10 @@ router.post('/addActivity', async (req, res) => {
     let text = req.body.text;
     let userId = req.body.id;
     
-    let date = timestamp.slice(0, 10);
-    let time = timestamp.slice(11, 22);
+    var fields = timestamp.split(',');
+    let date = fields[0];
+    let time = fields[1];
+    
     var pnumber;
     var bodyText;
 
@@ -306,21 +303,24 @@ router.post('/addActivity', async (req, res) => {
     let dateQuery = { 'date' : date };
     db_connect.collection("ActivityLog").findOne(dateQuery).then((response) => {
         if (response) {
+            console.log('Database entry found...');
             if (lockStatus === '1') {
-                bodyText = "Live Bolt Activity: Locked at" + time;
+                bodyText = "Live Bolt Activity: Your door was locked at" + time;
                 db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
                     $push: { lockTime: { time : time, toggle : 1 } }, $set: { activityStatus : 1 }
                 }, function (err, result) {
                     if (err) throw err;
+                    console.log('Updating log...');
                     if (!result) { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
                 });
 
             } else if (lockStatus === '-1') {
-                bodyText = "Live Bolt Activity: Unlocked at" + time;
+                bodyText = "Live Bolt Activity: Your door was unlocked at" + time;
                 db_connect.collection("ActivityLog").updateOne({ date: response.date }, {
                     $push: { lockTime: { time : time, toggle : -1 } }, $set: { activityStatus : -1 },
                 }, function (err, result) {
                     if (err) throw err;
+                    console.log('Updating log...');
                     if (!result) { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
                 });
 
@@ -329,12 +329,14 @@ router.post('/addActivity', async (req, res) => {
             }
 
         } else {
+            console.log('Database entry not found...');
             if (lockStatus === '1') {
                 newActivity = new Activity ({
                     date: date,
                     lockTime: [{ time : time, toggle : 1 }],
                     activityStatus: 1
                 });
+                bodyText = "Live Bolt Activity: Your door was locked at" + time;
 
             } else if (lockStatus === '-1') {
                 newActivity = new Activity ({
@@ -342,20 +344,26 @@ router.post('/addActivity', async (req, res) => {
                     lockTime: [{ time : time, toggle : -1 }],
                     activityStatus: -1
                 });
+                bodyText = "Live Bolt Activity: Your door was unlocked at" + time;
 
-            } else { res.send({ 'message' : 'Error: unauthorized lock status' }) }
+            } else { 
+                console.log('Lock status error...');
+                res.send({ 'message' : 'Error: unauthorized lock status' });
+            }
 
             db_connect.collection("ActivityLog").insertOne(newActivity, function (err, result) {
                 if (err) throw err;
+                console.log('Inserting log object...');
                 if (!result) { res.send({ 'message' : 'An error occured while updating the activity log.' }) }
             });
         }
     });
 
-    if (text === '1') {
+    if (text) {
         let userQuery = { _id: new ObjectID(userId) };
         db_connect.collection("Users").findOne(userQuery, function (err, result) {
             if (err) throw err;
+            console.log('Phone number found...');
             if (!result) { res.send({ 'message' : 'An error has occured sending text alerts to your number.' }) }
             
             pnumber = "+1" + result.phone;
@@ -363,9 +371,12 @@ router.post('/addActivity', async (req, res) => {
                 body: bodyText, 
                 from: '+17087428465', 
                 to: pnumber
-            }).then(res.send("SMS sent to " + pnumber));
+            }).done();
+            console.log('SMS sent!');
+            res.send({ 'message' : 'Activity log successfully updated! Text sent to user.'});
         });
     } else {
+        console.log('Text messages disabled...');
         res.send({ 'message' : 'Activity log successfully updated!' })
     }
 });

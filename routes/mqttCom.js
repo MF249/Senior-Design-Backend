@@ -6,20 +6,15 @@ const mqtt = require('mqtt');
 router.use(cors());
 require('dotenv').config();
 
+// Command Line Tools
+// mosquitto_sub -d -h localhost -p 1883 -t "myfirst/nodejs"
+// mosquitto_pub -d -h localhost -p 1883 -t "myfirst/nodejs" -m "Hello"
+
+
 const connectUrl = 'mqtt://192.168.1.180';
 
-router.get('/getCon', async (req, res) => {
-    var client = mqtt.connect();
-    client.on('connect', function () {
-        client.subscribe('first/test');
-        client.publish('first/test','Hello');
-    });
-
-
-    client.on('message', function (topic, message) {
-        console.log(message.toString());
-        client.end();
-    });
+router.get('/testRouter', async (req, res) => {
+    res.send({ 'message' : 'Hello from /mqtt'});
 });
 
 router.get('/testCon', async (req, res) => {
@@ -28,6 +23,25 @@ router.get('/testCon', async (req, res) => {
         console.log('connnected');
         client.subscribe('myfirst/test');
         client.publish('myfirst/test', '1');
+    });
+});
+
+router.post('/testLocal', async (req, res) => {
+    
+    let lockCommand = req.body.status;
+    let response;
+    
+    const client  = mqtt.connect();
+    client.on('connect', function (err) {
+        console.log('Connected to Local Broker...');
+        client.subscribe('myfirst/nodejs');
+        client.publish('myfirst/nodejs', lockCommand);
+    });
+
+    client.on('message', function (topic, message) {
+        response = 'Received ' + message.toString() + ' from topic ' + topic.toString();
+        res.send({ 'message' : response });
+        client.end();
     });
 });
 
