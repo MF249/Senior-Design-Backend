@@ -32,20 +32,20 @@ router.get('/testCon', async (req, res) => {
     });
 });
 
-router.post('/testLocal', async (req, res) => {
+router.post('/testLock', async (req, res) => {
     
     let lockCommand = req.body.status;
     let response;
     
-    const client  = mqtt.connect();
+    const client  = mqtt.connect('mqtt://test.mosquitto.org');
     client.on('connect', function (err) {
-        console.log('Connected to Local Broker...');
-        client.subscribe('myfirst/nodejs');
-        client.publish('myfirst/nodejs', lockCommand);
+        console.log('connnected to test.mosquitto.org...');
+        client.subscribe('livebolt/nodejs');
+        client.publish('livebolt/nodejs', lockCommand);
     });
 
     client.on('message', function (topic, message) {
-        response = 'Received ' + message.toString() + ' from topic ' + topic.toString();
+        response = 'Sent ' + message.toString() + ' from topic ' + topic.toString();
         res.send({ 'message' : response });
         client.end();
     });
