@@ -432,20 +432,11 @@ router.post('/textUser', async (req, res) => {
     }).then(res.send("SMS sent to " + pnumber));
 });
 
-router.get('/getCamFeed', async (req, res) => {
-    // If modifying these scopes, delete token.json.
+router.get('/getCamFeed', async (req, response) => {
     const SCOPES = ['https://www.googleapis.com/auth/drive'];
-    // The file token.json stores the user's access and refresh tokens, and is
-    // created automatically when the authorization flow completes for the first
-    // time.
     const TOKEN_PATH = path.join(process.cwd(), 'token.json');
     const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
-    /**
-     * Reads previously authorized credentials from the save file.
-     *
-     * @return {Promise<OAuth2Client|null>}
-     */
     async function loadSavedCredentialsIfExist() {
         try {
             const content = await fs.readFile(TOKEN_PATH);
@@ -456,12 +447,6 @@ router.get('/getCamFeed', async (req, res) => {
         }
     }
 
-    /**
-     * Serializes credentials to a file comptible with GoogleAUth.fromJSON.
-     *
-     * @param {OAuth2Client} client
-     * @return {Promise<void>}
-     */
     async function saveCredentials(client) {
         const content = await fs.readFile(CREDENTIALS_PATH);
         const keys = JSON.parse(content);
@@ -475,10 +460,6 @@ router.get('/getCamFeed', async (req, res) => {
         await fs.writeFile(TOKEN_PATH, payload);
     }
 
-    /**
-     * Load or request or authorization to call APIs.
-     *
-     */
     async function authorize() {
         let client = await loadSavedCredentialsIfExist();
         if (client) {
@@ -494,30 +475,24 @@ router.get('/getCamFeed', async (req, res) => {
         return client;
     }
 
-    /**
-     * Lists the names and IDs of up to 10 files.
-     * @param {OAuth2Client} authClient An authorized OAuth2 client.
-     */
     async function listFiles(authClient) {
         const drive = google.drive({version: 'v3', auth: authClient});
-        res = await drive.files.list({
+        const res = await drive.files.list({
             fields: 'nextPageToken, files(webViewLink)',
         });
 
+        console.log(res.data);
+
+        response.send(res);
+
         const files = res.data.files;
         if (files.length === 0) {
-            console.log('No files found.');
+            console.log('No capture images found.');
             return;
         }
 
-        files.map((file) => {
-            console.log(`(${file.webViewLink})`);
-        });
-
-        console.log(res.data);
     }
 
-    res.send("Check");
     authorize().then(listFiles).catch(console.error);
 });
 
