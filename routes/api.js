@@ -500,11 +500,11 @@ router.get('/getCamFeed', async (req, res) => {
      */
     async function listFiles(authClient) {
         const drive = google.drive({version: 'v3', auth: authClient});
-        const obj = await drive.files.list({
+        res = await drive.files.list({
             fields: 'nextPageToken, files(webViewLink)',
         });
 
-        const files = obj.data.files;
+        const files = res.data.files;
         if (files.length === 0) {
             console.log('No files found.');
             return;
@@ -517,7 +517,7 @@ router.get('/getCamFeed', async (req, res) => {
         console.log(res.data);
     }
 
-    res.send(obj);
+    res.send("Check");
     authorize().then(listFiles).catch(console.error);
 });
 
