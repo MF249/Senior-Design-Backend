@@ -489,7 +489,7 @@ router.get('/getCamFeed', async (req, response) => {
 
         console.log(res.data);
 
-        response.send(res.data);
+        response.send();
 
     }
 
