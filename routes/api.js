@@ -481,15 +481,15 @@ router.get('/getCamFeed', async (req, response) => {
             fields: 'nextPageToken, files(webViewLink)',
         });
 
-        console.log(res.data);
-
-        response.send(res);
-
         const files = res.data.files;
         if (files.length === 0) {
             console.log('No capture images found.');
             return;
         }
+
+        console.log(res.data);
+
+        response.send(res.data);
 
     }
 
