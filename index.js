@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 5000;
 const apiRoutes = require('./routes/api.js');
 const mqttRoutes = require('./routes/mqttCom.js');
+const googleRoutes = require('./routes/googleAPI.js');
 var mongoUtil = require('./mongoUtil');
 
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 app.use(bodyParser.json()); 
 app.use('/api', apiRoutes);
 app.use('/mqtt', mqttRoutes);
+app.use('/google', googleRoutes);
 
 app.use((req, res, next) => 
 {
