@@ -15,8 +15,8 @@ const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
 
 router.get('/runDrive', async (req, res) => {
-    //authorize().then(listFiles).catch(console.error);
-    res.send(authorize().then(listFiles).catch(console.error));
+    
+    res.send(listFiles());
 });
     
 async function loadSavedCredentialsIfExist() {
@@ -71,4 +71,6 @@ async function loadSavedCredentialsIfExist() {
     console.log(res.data);
     return res.data;
   }
+
+  authorize().then(listFiles).catch(console.error);
   module.exports = router;
