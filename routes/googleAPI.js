@@ -68,7 +68,7 @@ async function loadSavedCredentialsIfExist() {
       console.log('No files found.');
       return;
     }
-    return res.data;
     console.log(res.data);
+    return res.data;
   }
   module.exports = router;
