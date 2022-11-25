@@ -72,7 +72,34 @@ router.post('/register', async (req, res) => {
     } else {
         db_connect.collection("Users").insertOne(newUser, function (err, result) {
             if (err) throw err;
-            if (result) { res.json(result) } else { res.send({ 'message' : 'An error occured while registering your account.' }) }
+            
+            if (!result) { 
+                res.send({ 'message' : 'An error occured while registering your account.' }) 
+            } else {
+                const pin = Math.floor(100000 + Math.random() * 900000);
+
+                const msg = {
+                    to: newUser.email,
+                    from: 'liveboltsmartlock@gmail.com',
+                    substitutionWrappers: ['{{', '}}'],
+                    dynamicTemplateData: {
+                        name: `${newUser.name}`,
+                        code: `${pin}`
+                    },
+                    templateId: 'd-1419eed499ef422c9b57f06653275dc4',
+                }
+    
+                sgMail.send(msg).then(() => {
+                    console.log('Account verification email sent');
+                }).catch((error) => {
+                    res.send({ 'message' : error });
+                });
+
+                db_connect.collection("Users").updateOne(
+                    {_id: result.insertedId}, 
+                    {$set: {verifyPIN: pin}}
+                ).then(res.send({ 'message' : 'Email successfully sent!', 'id' : result.insertedId }));
+            }
         });
     }
 });
