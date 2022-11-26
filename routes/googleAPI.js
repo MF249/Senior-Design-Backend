@@ -12,13 +12,6 @@ const CREDENTIALS_PATH = path.join(process.cwd(), 'google-credentials.json');
 
 
 router.get('/runDrive', async (req, res) => { 
-    //var content;
-
-    /*res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-    });*/
-
     try{
         const auth = new google.auth.GoogleAuth({
             keyFile: './google-credentials.json',
@@ -35,9 +28,9 @@ router.get('/runDrive', async (req, res) => {
         console.log(auth);
 
         const response = await driveService.files.list({
-            fields: 'nextPageToken, files(thumbnailLink)',
+            //fields: 'nextPageToken, files(thumbnailLink)',
         });
-        //res.json(response.data);
+        res.json(response.data);
         //return response.data;
 
         console.log(response.data);
