@@ -20,10 +20,10 @@ router.get('/runDrive', async (req, res) => {
     });
 
     try{
-            const auth = await authenticate({
-                keyfilePath: CREDENTIALS_PATH,
-                scopes: ['https://www.googleapis.com/auth/drive']
-            })
+        const auth = new google.auth.GoogleAuth({
+            keyFile: './google-credentials.json',
+            scopes: ['https://www.googleapis.com/auth/drive']
+        })
 
         console.log("Test");
 
@@ -37,7 +37,7 @@ router.get('/runDrive', async (req, res) => {
         const response = await driveService.files.list({
             fields: 'nextPageToken, files(thumbnailLink)',
         });
-        res.json(response.data);
+        //res.json(response.data);
         //return response.data;
 
         console.log(response.data);
