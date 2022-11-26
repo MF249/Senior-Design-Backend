@@ -14,10 +14,10 @@ const CREDENTIALS_PATH = path.join(process.cwd(), 'google-credentials.json');
 router.get('/runDrive', async (req, res) => { 
     //var content;
 
-    res.set({
+    /*res.set({
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-    });
+    });*/
 
     try{
         const auth = new google.auth.GoogleAuth({
@@ -47,7 +47,7 @@ router.get('/runDrive', async (req, res) => {
     }
 });
     
-async function loadSavedCredentialsIfExist() {
+/*async function loadSavedCredentialsIfExist() {
     try {
       const content = await fs.readFile(TOKEN_PATH);
       const credentials = JSON.parse(content);
@@ -98,5 +98,5 @@ async function loadSavedCredentialsIfExist() {
     }
     console.log(files);
     return files;
-  }
+  }*/
   module.exports = router;
