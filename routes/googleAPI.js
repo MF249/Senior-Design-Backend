@@ -18,7 +18,7 @@ router.get('/runDrive', async (req, res) => {
             scopes: ['https://www.googleapis.com/auth/drive']
         })
 
-        console.log("Test");
+        //console.log("Test");
 
         const driveService = google.drive({
             version: 'v3',
@@ -27,10 +27,11 @@ router.get('/runDrive', async (req, res) => {
 
         console.log(auth);
 
-        const response = await driveService.files.list({
-            //fields: 'nextPageToken, files(thumbnailLink)',
-        });
-        res.json(response.data);
+        /*const response = await driveService.files.list({
+            fields: 'nextPageToken, files(thumbnailLink)',
+        });*/
+        res.send(check);
+        //res.json(response.data);
         //return response.data;
 
         console.log(response.data);
