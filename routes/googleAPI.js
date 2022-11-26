@@ -36,11 +36,14 @@ router.get('/runDrive', async (req, res) => {
             q: `'${'1p23yB9WoIpIhsSCf0KS2rYSlEdSrnRXN'}' in parents and trashed=false`
         });*/
 
+        res = await driveService.files.list()
+        console.log(res.data)
+
         res.send('check');
         //res.json(response.data);
         //return response.data;
 
-        console.log(response.data);
+        //console.log(response.data);
 
     }catch(err){
         console.log('Upload file error', err)
