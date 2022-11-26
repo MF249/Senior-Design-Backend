@@ -7,7 +7,7 @@ const path = require('path');
 const {authenticate} = require('@google-cloud/local-auth');
 
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+const CREDENTIALS_PATH = path.join(process.cwd(), 'google-credentials.json');
 
 
 
