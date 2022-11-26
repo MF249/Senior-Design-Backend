@@ -1,21 +1,40 @@
-const express = require('express');
-const router = express.Router();
-const cors = require('cors');
-const fs = require('fs').promises;
+const fs = require('fs');
+const { google } = require('googleapis');
 const path = require('path');
-const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
-const {google} = require('googleapis');
-const { serviceconsumermanagement } = require('googleapis/build/src/apis/serviceconsumermanagement');
-
-const SCOPES = ['https://www.googleapis.com/auth/drive'];
 
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
-
 router.get('/runDrive', async (req, res) => { 
-    res.json(authorize().then(listFiles).catch(console.error));
+    var content;
+
+    try{
+            const auth = await authenticate({
+                keyfilePath: CREDENTIALS_PATH,
+                scopes: ['https://www.googleapis.com/auth/drive']
+            })
+
+        console.log("Test");
+
+        const driveService = google.drive({
+            version: 'v3',
+            auth
+        })
+
+        console.log(auth);
+
+        const response = await driveService.files.list({
+            fields: 'nextPageToken, files(thumbnailLink)',
+        });
+        response.json(response.data);
+        //return response.data;
+
+        console.log(response.data);
+
+    }catch(err){
+        console.log('Upload file error', err)
+    }
 });
     
 async function loadSavedCredentialsIfExist() {
