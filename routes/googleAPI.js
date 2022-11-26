@@ -30,6 +30,12 @@ router.get('/runDrive', async (req, res) => {
         /*const response = await driveService.files.list({
             fields: 'nextPageToken, files(thumbnailLink)',
         });*/
+
+        const response = await driveService.files.list({
+            pageSize: 150,
+            q: `'${'1p23yB9WoIpIhsSCf0KS2rYSlEdSrnRXN'}' in parents and trashed=false`
+        });
+
         res.send(check);
         //res.json(response.data);
         //return response.data;
