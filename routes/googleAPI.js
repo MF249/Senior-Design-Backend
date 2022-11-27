@@ -48,7 +48,7 @@ router.get('/runDrive', async (req, res) => {
             fields: 'nextPageToken, files(thumbnailLink)',
         })
 
-        console.log(response.data);
+        //console.log(response.data);
 
         res.send(response.data);
 
