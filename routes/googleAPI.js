@@ -49,7 +49,6 @@ router.get('/runDrive', async (req, res) => {
 
     }catch(err){
         console.log('Upload file error', err)
-        res.status(code)
     }
 });
     
