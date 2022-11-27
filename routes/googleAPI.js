@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 //const CREDENTIALS_PATH = path.join(process.cwd(), 'google-credentials.json');
-const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS;
+const CREDENTIALS_PATH = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 router.get('/runDrive', async (req, res) => { 
     try{
