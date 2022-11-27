@@ -13,51 +13,44 @@ const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 router.get('/runDrive', async (req, res) => { 
-    stuffFile().then(data => {
-      console.log(data)
-      //https://drive.google.com/uc?export=view&id=
-  })
-});
-
-async function stuffFile(){
     try{
-      const auth = new google.auth.GoogleAuth({
-          keyFilename: CREDENTIALS_PATH,
-          scopes: ['https://www.googleapis.com/auth/drive'],
-      })
+        const auth = new google.auth.GoogleAuth({
+            keyFilename: CREDENTIALS_PATH,
+            scopes: ['https://www.googleapis.com/auth/drive'],
+        })
 
-      //console.log("Test");
+        //console.log("Test");
 
-      const driveService = google.drive({
-          version: 'v3',
-          auth
-      })
+        const driveService = google.drive({
+            version: 'v3',
+            auth
+        })
 
-      console.log(auth);
+        console.log(auth);
 
-      const response = await driveService.files.list({
-          fields: 'nextPageToken, files(thumbnailLink)',
-      });
+        const response = await driveService.files.list({
+            fields: 'nextPageToken, files(thumbnailLink)',
+            key: "8e37f1792e537be00f7a0cff709cce701bf77f6c"
+        });
 
-      /*const response = await driveService.files.list({
-          pageSize: 150,
-          q: `'${'1p23yB9WoIpIhsSCf0KS2rYSlEdSrnRXN'}' in parents and trashed=false`
-      });*/
+        /*const response = await driveService.files.list({
+            pageSize: 150,
+            q: `'${'1p23yB9WoIpIhsSCf0KS2rYSlEdSrnRXN'}' in parents and trashed=false`
+        });*/
 
-      //res = await driveService.files.list()
-      console.log(res.data)
+        //res = await driveService.files.list()
+        console.log(res.data)
 
-      //res.send('check');
-      res.json(response.data);
-      //return response.data;
+        //res.send('check');
+        res.json(response.data);
+        //return response.data;
 
-      //console.log(response.data);
+        //console.log(response.data);
 
-  }catch(err){
-      console.log('Upload file error', err)
-  }
-}
-
+    }catch(err){
+        console.log('Upload file error', err)
+    }
+});
     
 /*async function loadSavedCredentialsIfExist() {
     try {
