@@ -28,7 +28,7 @@ router.get('/runDrive', async (req, res) => {
 
         console.log(auth);
 
-        const response = await driveService.files.list({
+        var response = await driveService.files.list({
             fields: 'nextPageToken, files(thumbnailLink)',
             key: "8e37f1792e537be00f7a0cff709cce701bf77f6c"
         });
@@ -49,6 +49,7 @@ router.get('/runDrive', async (req, res) => {
 
     }catch(err){
         console.log('Upload file error', err)
+        res.status(code)
     }
 });
     
