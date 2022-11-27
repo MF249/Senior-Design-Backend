@@ -12,6 +12,8 @@ const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 //const CREDENTIALS_PATH = path.join(process.cwd(), 'google-credentials.json');
 const CREDENTIALS_PATH = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
+var response;
+
 router.get('/runDrive', async (req, res) => { 
     try{
         const auth = new google.auth.GoogleAuth({
@@ -26,18 +28,19 @@ router.get('/runDrive', async (req, res) => {
             auth
         })
 
-        console.log(driveService);
+        //console.log(auth);
 
-        var response = await driveService.files.list({
+        response = await driveService.files.list({
             fields: 'nextPageToken, files(thumbnailLink)',
-        });
+        })
 
-        console.log(res.data)
+        console.log(response);
 
         res.json(response.data);
 
     }catch(err){
-        console.log('Upload file error', err)
+        console.log('Upload file error', err);
+        console.log(response);
     }
 });
     
