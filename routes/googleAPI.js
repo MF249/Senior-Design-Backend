@@ -26,26 +26,15 @@ router.get('/runDrive', async (req, res) => {
             auth
         })
 
-        console.log(auth);
+        console.log(driveService);
 
         var response = await driveService.files.list({
             fields: 'nextPageToken, files(thumbnailLink)',
-            key: "8e37f1792e537be00f7a0cff709cce701bf77f6c"
         });
 
-        /*const response = await driveService.files.list({
-            pageSize: 150,
-            q: `'${'1p23yB9WoIpIhsSCf0KS2rYSlEdSrnRXN'}' in parents and trashed=false`
-        });*/
-
-        //res = await driveService.files.list()
         console.log(res.data)
 
-        //res.send('check');
         res.json(response.data);
-        //return response.data;
-
-        //console.log(response.data);
 
     }catch(err){
         console.log('Upload file error', err)
