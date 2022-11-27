@@ -15,8 +15,8 @@ const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS;
 router.get('/runDrive', async (req, res) => { 
     try{
         const auth = new google.auth.GoogleAuth({
-            keyFile: CREDENTIALS_PATH,
-            scopes: ['https://www.googleapis.com/auth/drive']
+            keyFilename: CREDENTIALS_PATH,
+            scopes: ['https://www.googleapis.com/auth/drive'],
         })
 
         //console.log("Test");
