@@ -23,7 +23,7 @@ router.get('/runDrive', async (req, res) => {
 
         //console.log("Test");
 
-        const driveService = google.drive({
+        const driveService = await google.drive({
             version: 'v3',
             auth
         })
