@@ -5,16 +5,17 @@ const fs = require('fs');
 const { google } = require('googleapis');
 const path = require('path');
 const {authenticate} = require('@google-cloud/local-auth');
+require('dotenv').config();
+
 
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), 'google-credentials.json');
-
-
+//const CREDENTIALS_PATH = path.join(process.cwd(), 'google-credentials.json');
+const CREDENTIALS_PATH = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 router.get('/runDrive', async (req, res) => { 
     try{
         const auth = new google.auth.GoogleAuth({
-            keyFile: './google-credentials.json',
+            keyFile: CREDENTIALS_PATH,
             scopes: ['https://www.googleapis.com/auth/drive']
         })
 
